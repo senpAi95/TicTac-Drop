@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,9 @@ public class DropTokenService {
     private PlayerDao playerDao;
     private GameStatusDao gameStatusDao;
 
+    @Inject
+    GridOperations gridOperations;
+
     public DropTokenService(MongoDatabase database) {
         this.database = database;
         initialize();
@@ -55,7 +59,8 @@ public class DropTokenService {
      */
     @Nonnull
     public List<String> getInProgressGames() {
-        LOGGER.debug("Retrieving in progress games");
+        System.out.println(gridOperations);
+        LOGGER.info("Retrieving in progress games");
         List<String> gameIds = gameStatusDao.getInProgressGames();
         LOGGER.debug("Retrieved gameIds {}", gameIds);
         return gameIds;

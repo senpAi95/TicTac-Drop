@@ -8,6 +8,9 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.tictac.droptoken.inject.DependencyInjectionBundle;
+import com.tictac.droptoken.inject.DropTokenConfiguration;
+import com.tictac.droptoken.inject.NamedProperty;
 import io.dropwizard.Application;
 import io.dropwizard.jersey.errors.EarlyEofExceptionMapper;
 import io.dropwizard.jersey.jackson.JsonProcessingExceptionMapper;
@@ -18,9 +21,13 @@ import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
@@ -49,16 +56,37 @@ public class DropTokenApplication extends Application<DropTokenConfiguration> {
     @Override
     public void run(DropTokenConfiguration configuration,
                     Environment environment) {
+
         environment.getObjectMapper()
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL)
                 .registerModule(new Jdk8Module());
         environment.getObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
-        environment.jersey().register(new DropTokenExceptionMapper());
-        environment.jersey().register(new WebApplicationExceptionMapper());
-        environment.jersey().register(new JerseyViolationExceptionMapper());
-        environment.jersey().register(new JsonProcessingExceptionMapper());
-        environment.jersey().register(new EarlyEofExceptionMapper());
+
+        Consumer<Object> environmentRegistrar = __ -> environment.jersey().register(__);
+        environmentRegistrar.accept(new DropTokenApplication());
+        environmentRegistrar.accept(new DropTokenExceptionMapper());
+        environmentRegistrar.accept(new WebApplicationExceptionMapper());
+        environmentRegistrar.accept(new JerseyViolationExceptionMapper());
+        environmentRegistrar.accept(new JsonProcessingExceptionMapper());
+        environmentRegistrar.accept(new EarlyEofExceptionMapper());
+
+
+//         DependencyInjectionBundle dependencyInjectionBundle = new DependencyInjectionBundle();
+//         dependencyInjectionBundle.run(configuration, environment);
+
+        environment.jersey().register(new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bind(new GridOperations()).to(GridOperations.class);
+                for(Class<?> singletonClass : configuration.getSingletons()) {
+                    bindAsContract(singletonClass).in(Singleton.class);
+                }
+                for (NamedProperty<? extends Object> namedProperty : configuration.getNamedProperties()) {
+                    bind((Object) namedProperty.getValue()).to((Class<Object>) namedProperty.getClazz()).named(namedProperty.getId());
+                }
+            }
+        });
 
         final MongoClient mongoClient = MongoClients.create(DB_CONNECTION_STRING);
         List<CodecProvider> providerList = new ArrayList<>();
@@ -73,7 +101,7 @@ public class DropTokenApplication extends Application<DropTokenConfiguration> {
         DropTokenService dropTokenService = new DropTokenService(database);
 
         final DropTokenResource resource = new DropTokenResource(dropTokenService);
-        environment.jersey().register(resource);
+        environmentRegistrar.accept(resource);
 
     }
 
