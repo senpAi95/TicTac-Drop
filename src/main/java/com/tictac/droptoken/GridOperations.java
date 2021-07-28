@@ -1,5 +1,7 @@
 package com.tictac.droptoken;
 
+import javax.inject.Inject;
+
 /**
  * Encapsulates Operations which can be performed on a game.
  */
@@ -30,53 +32,71 @@ public class GridOperations {
      * @param column
      * @return
      */
-    // row where the coin got placed.
     public static boolean winningMove(String[][] grid, String playerId, int row, int column) {
         int len = grid.length;
-        boolean win = true;
+        boolean win;
         // decrement 1 considering 0 index in array
         column--;
         // Check row.
-        for(int i =0 ; i<len; i++) {
-            if(!grid[row][i].equals(playerId))
-            {
-                win = false;
-                break;
-            }
-        }
+        win = checkRow(grid, playerId, row);
 
         // check column.
         if(!win){
-            win = true;
-            for(int i=0; i<len; i++) {
-                if(!grid[i][column].equals(playerId)) {
-                    win = false;
-                    break;
-                }
-            }
+            win = checkColumn(grid, playerId, column);
         }
 
         // check forward diagonal if row == column
         if(!win && row == column) {
-            win = true;
-            for(int i=0; i<len ; i++) {
-                if(!grid[i][i].equals(playerId)) {
-                    win = false;
-                    break;
-                }
-            }
+            win = checkForwardDiagonal(grid, playerId);
+
         }
 
         // check reverse diagonal if row + column = len +1.
         if(!win && (row + column) == (len +1)) {
-            for(int i =0; i<len;i++) {
-                if(!grid[i][len-i-1].equals(playerId)) {
-                    win = false;
-                    break;
-                }
-            }
+            win = checkReverseDiagonal(grid, playerId);
         }
 
         return win;
+    }
+
+    private static boolean checkRow(String[][] grid, String playerId, int row) {
+        int len = grid.length;
+        for(int i =0 ; i<len; i++) {
+            if(!grid[row][i].equals(playerId))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkColumn(String[][] grid, String playerId, int column) {
+        int len = grid.length;
+        for(int i=0; i<len; i++) {
+            if(!grid[i][column].equals(playerId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkForwardDiagonal(String[][] grid, String playerId) {
+        int len = grid.length;
+        for(int i=0; i<len ; i++) {
+            if(!grid[i][i].equals(playerId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean checkReverseDiagonal(String[][] grid, String playerId) {
+        int len = grid.length;
+        for(int i =0; i<len;i++) {
+            if(!grid[i][len-i-1].equals(playerId)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
