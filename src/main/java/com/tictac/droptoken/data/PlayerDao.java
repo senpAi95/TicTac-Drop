@@ -12,11 +12,10 @@ public interface PlayerDao {
      * Adds a list of players to the {@link Player} MongoCollection.
      *
      * @param names names of players.
-     * @param gameId The current gameId associated with players.
      * @return list of playerIds for the given player names after successfully persisting the data.
      * @throws MongoException
      */
-    List<String> addPlayers(List<String> names, String gameId) throws MongoException;
+    List<String> addPlayers(List<String> names) throws MongoException;
 
     /**
      * Retrieves a {@link Player} by playerId from the {@link Player} MongoCollection.

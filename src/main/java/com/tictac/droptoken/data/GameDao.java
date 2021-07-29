@@ -11,11 +11,10 @@ public interface GameDao {
     /**
      * Creates a {@link Game} in the {@link Game} Mongo Collection.
      *
-     * @param gameId
      * @param request
      * @param playerIds
      */
-    void createGame(String gameId, CreateGameRequest request, List<String> playerIds);
+    String createGame(CreateGameRequest request, List<String> playerIds);
 
     /**
      * Retrieves a {@link Game} from the {@link Game} Mongo Collection.

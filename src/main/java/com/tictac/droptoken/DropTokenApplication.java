@@ -8,6 +8,10 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import com.tictac.droptoken.data.impl.GameDaoImpl;
+import com.tictac.droptoken.data.impl.GameStatusDaoImpl;
+import com.tictac.droptoken.data.impl.MoveDaoImpl;
+import com.tictac.droptoken.data.impl.PlayerDaoImpl;
 import io.dropwizard.Application;
 import io.dropwizard.jersey.errors.EarlyEofExceptionMapper;
 import io.dropwizard.jersey.jackson.JsonProcessingExceptionMapper;
@@ -70,7 +74,11 @@ public class DropTokenApplication extends Application<DropTokenConfiguration> {
                 );
         final MongoDatabase database = mongoClient.getDatabase(DATABASE)
                 .withCodecRegistry(pojoCodecRegistry);
-        DropTokenService dropTokenService = new DropTokenService(database);
+        DropTokenService dropTokenService = new DropTokenService(
+                new GameDaoImpl(database),
+                new GameStatusDaoImpl(database),
+                new MoveDaoImpl(database),
+                new PlayerDaoImpl(database));
 
         final DropTokenResource resource = new DropTokenResource(dropTokenService);
         environment.jersey().register(resource);

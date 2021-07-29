@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
+import static com.tictac.droptoken.util.UidGenerator.generateUid;
 
 public class GameDaoImpl extends CollectionDao<Game> implements GameDao {
 
@@ -32,9 +33,13 @@ public class GameDaoImpl extends CollectionDao<Game> implements GameDao {
     }
 
     @Override
-    public void createGame(String gameId, CreateGameRequest request, List<String> playerIds) throws MongoException {
+    public String createGame(CreateGameRequest request, List<String> playerIds) throws MongoException {
+        List<String> distinctSortedPlayers = playerIds.stream().distinct().sorted().collect(Collectors.toList());
+        // can same players play multiple games in parallel? if so, append timestamp to sortedPlayers.
+        final String gameId = generateUid(distinctSortedPlayers);
         final Game game = new Game(gameId, playerIds, request.getColumns());
         mongoCollection.insertOne( game);
+        return gameId;
     }
 
     @Override

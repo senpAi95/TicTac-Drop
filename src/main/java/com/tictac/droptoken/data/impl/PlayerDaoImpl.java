@@ -27,7 +27,7 @@ public class PlayerDaoImpl extends CollectionDao<Player> implements PlayerDao {
         super(database, CollectionNames.PLAYERS.getValue(), Player.class);
     }
 
-    public String addPlayer(String name, String gameId) {
+    public String addPlayer(String name) {
         String playerId = UidGenerator.generateUid(name);
         Optional<Player> optionalPlayer = getPlayer(playerId);
         if(optionalPlayer.isEmpty()) {
@@ -40,9 +40,9 @@ public class PlayerDaoImpl extends CollectionDao<Player> implements PlayerDao {
     }
 
     @Override
-    public List<String> addPlayers(List<String> names, String gameId) throws MongoException {
+    public List<String> addPlayers(List<String> names) throws MongoException {
         // optimize below to bulk operations instead of one by one
-        return names.stream().map(name -> addPlayer(name, gameId)).collect(Collectors.toList());
+        return names.stream().map(name -> addPlayer(name)).collect(Collectors.toList());
     }
     @Override
     public Optional<Player> getPlayer(String playerId) {
