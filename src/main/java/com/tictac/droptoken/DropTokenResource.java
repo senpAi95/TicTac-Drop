@@ -12,6 +12,8 @@ import com.tictac.droptoken.model.PostMoveResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -32,10 +34,8 @@ import java.util.List;
 public class DropTokenResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(DropTokenResource.class);
 
-    final DropTokenService dropTokenService;
-    public DropTokenResource(DropTokenService dropTokenService) {
-        this.dropTokenService = dropTokenService;
-    }
+    @Inject
+    DropTokenService dropTokenService;
 
     @GET
     public Response getGames() {

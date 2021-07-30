@@ -7,6 +7,7 @@ import com.tictac.droptoken.model.Move;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class MoveDaoImpl extends CollectionDao<Move> implements MoveDao {
 
     private static final String OBJECT_ID = "_id";
 
+    @Inject
     public MoveDaoImpl(MongoDatabase database) {
         // if collection name is not valid, its not throwing error while application is running.
         super(database, CollectionNames.MOVES.getValue(), Move.class);

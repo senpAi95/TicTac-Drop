@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,14 +31,24 @@ public class DropTokenService {
     private static final Logger LOGGER = LoggerFactory.getLogger(DropTokenService.class);
     private static final String MOVE = "MOVE";
     private static final String QUIT = "QUIT";
-    private static final int MIN_GRID_PLAYERS = 2;
-    private static final int MIN_GRID_LENGTH = 4;
 
-    private GameDao gameDao;
-    private MoveDao moveDao;
-    private PlayerDao playerDao;
-    private GameStatusDao gameStatusDao;
+    private final GameDao gameDao;
+    private final MoveDao moveDao;
+    private final PlayerDao playerDao;
+    private final GameStatusDao gameStatusDao;
 
+    @Inject
+    private GridOperations gridOperations;
+    @Inject
+    private NewGameValidator newGameValidator;
+    @Inject
+    private GameStatusValidator gameStatusValidator;
+    @Inject
+    private PostMoveValidator postMoveValidator;
+    @Inject
+    private PlayerQuitValidator playerQuitValidator;
+
+    @Inject
     public DropTokenService(GameDao gameDao, GameStatusDao gameStatusDao, MoveDao moveDao, PlayerDao playerDao) {
         this.gameDao = gameDao;
         this.moveDao = moveDao;
@@ -75,7 +86,6 @@ public class DropTokenService {
     public String createNewGame(CreateGameRequest request) throws WebApplicationException{
         LOGGER.debug("Creating new game");
 
-        NewGameValidator newGameValidator = new NewGameValidator(MIN_GRID_PLAYERS, MIN_GRID_LENGTH);
         newGameValidator.validate(request);
 
         String gameId = null;
@@ -104,7 +114,6 @@ public class DropTokenService {
         GameStatusResponse.Builder builder = new GameStatusResponse.Builder();
         Optional<GameStatus> optionalGameStatus = gameStatusDao.getGameStatus(gameId);
 
-        GameStatusValidator gameStatusValidator = new GameStatusValidator();
         gameStatusValidator.validate(optionalGameStatus.orElse(null));
 
         GameStatus gameStatus = optionalGameStatus.get();
@@ -132,11 +141,10 @@ public class DropTokenService {
         GameStatus gameStatus = gameStatusDao.getGameStatus(gameId).orElse(null);
         Player player = playerDao.getPlayer(playerId).orElse(null);
 
-        PostMoveValidator postMoveValidator = new PostMoveValidator();
         postMoveValidator.validate(game, player, gameStatus, playerId);
 
         String[][] grid = buildGrid(game.getGridValues(), game.getLength());
-        int rowIndex = GridOperations.getPossibleRow(grid, column);
+        int rowIndex = gridOperations.getPossibleRow(grid, column);
 
         if(rowIndex == -1) {
             throwException(ILLEGAL_MOVE);
@@ -148,7 +156,7 @@ public class DropTokenService {
         // updateGrid and add Move.
         game.getMoveIds().add(move.getId());
 
-         if(GridOperations.winningMove(grid, playerId, rowIndex, column))
+         if(gridOperations.winningMove(grid, playerId, rowIndex, column))
              gameStatusDao.updateGameStatusToCompleted(gameId, player.getName());
 
             //update gameDao, movesDao
@@ -218,7 +226,6 @@ public class DropTokenService {
         Player player = playerDao.getPlayer(playerId).orElse(null);
         GameStatus gameStatus = gameStatusDao.getGameStatus(gameId).orElse(null);
 
-        PlayerQuitValidator playerQuitValidator = new PlayerQuitValidator();
         playerQuitValidator.validate(game, player, gameStatus, playerId);
 
         Move move = moveCreator(QUIT, player.getName(), -1);

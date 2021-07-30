@@ -1,7 +1,6 @@
 package com.tictac.droptoken.validator;
 
 import com.tictac.droptoken.model.GameStatus;
-import com.tictac.droptoken.util.ExceptionStatusCodeAndMessage;
 
 import javax.ws.rs.WebApplicationException;
 

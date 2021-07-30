@@ -1,7 +1,5 @@
 package com.tictac.droptoken;
 
-import javax.inject.Inject;
-
 /**
  * Encapsulates Operations which can be performed on a game.
  */
@@ -14,7 +12,7 @@ public class GridOperations {
      * @param column
      * @return
      */
-    public static int getPossibleRow(String[][] grid, int column) {
+    public int getPossibleRow(String[][] grid, int column) {
         // if top entrance is empty, then its valid..
         //if input column is 1, if we can peek (0,1) - top one from grid then we will know that its valid.
         for(int i = grid.length-1; i>=0; i--) {
@@ -32,7 +30,7 @@ public class GridOperations {
      * @param column
      * @return
      */
-    public static boolean winningMove(String[][] grid, String playerId, int row, int column) {
+    public boolean winningMove(String[][] grid, String playerId, int row, int column) {
         int len = grid.length;
         boolean win;
         // decrement 1 considering 0 index in array
@@ -59,7 +57,7 @@ public class GridOperations {
         return win;
     }
 
-    private static boolean checkRow(String[][] grid, String playerId, int row) {
+    private boolean checkRow(String[][] grid, String playerId, int row) {
         int len = grid.length;
         for(int i =0 ; i<len; i++) {
             if(!grid[row][i].equals(playerId))
@@ -70,7 +68,7 @@ public class GridOperations {
         return true;
     }
 
-    private static boolean checkColumn(String[][] grid, String playerId, int column) {
+    private boolean checkColumn(String[][] grid, String playerId, int column) {
         int len = grid.length;
         for(int i=0; i<len; i++) {
             if(!grid[i][column].equals(playerId)) {
@@ -80,7 +78,7 @@ public class GridOperations {
         return true;
     }
 
-    private static boolean checkForwardDiagonal(String[][] grid, String playerId) {
+    private boolean checkForwardDiagonal(String[][] grid, String playerId) {
         int len = grid.length;
         for(int i=0; i<len ; i++) {
             if(!grid[i][i].equals(playerId)) {
@@ -90,7 +88,7 @@ public class GridOperations {
         return true;
     }
 
-    private static boolean checkReverseDiagonal(String[][] grid, String playerId) {
+    private boolean checkReverseDiagonal(String[][] grid, String playerId) {
         int len = grid.length;
         for(int i =0; i<len;i++) {
             if(!grid[i][len-i-1].equals(playerId)) {

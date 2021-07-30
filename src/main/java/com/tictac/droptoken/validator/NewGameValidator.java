@@ -5,6 +5,8 @@ import com.tictac.droptoken.util.ExceptionStatusCodeAndMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.WebApplicationException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +21,8 @@ public class NewGameValidator {
     private final int minPlayers;
     private final int minGridLength;
 
-    public NewGameValidator(int minPlayers, int minGridLength) {
+    @Inject
+    public NewGameValidator(@Named("minPlayers") int minPlayers, @Named("minGridLength") int minGridLength) {
         this.minPlayers = minPlayers;
         this.minGridLength = minGridLength;
     }
@@ -65,7 +68,7 @@ public class NewGameValidator {
         validateDistinctPlayers(request);
     }
 
-    void throwException(ExceptionStatusCodeAndMessage exceptionStatusCodeAndMessage) {
+    void throwException(ExceptionStatusCodeAndMessage exceptionStatusCodeAndMessage) throws WebApplicationException{
         throw new WebApplicationException(exceptionStatusCodeAndMessage.getMessage(), exceptionStatusCodeAndMessage.getStatusCode());
     }
 }

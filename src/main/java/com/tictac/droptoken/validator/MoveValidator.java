@@ -53,7 +53,7 @@ public abstract class MoveValidator {
         }
     }
 
-    void throwException(ExceptionStatusCodeAndMessage exceptionStatusCodeAndMessage) {
+    void throwException(ExceptionStatusCodeAndMessage exceptionStatusCodeAndMessage) throws WebApplicationException{
         throw new WebApplicationException(exceptionStatusCodeAndMessage.getMessage(), exceptionStatusCodeAndMessage.getStatusCode());
     }
 }

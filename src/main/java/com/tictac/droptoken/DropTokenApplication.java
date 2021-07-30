@@ -1,5 +1,7 @@
 package com.tictac.droptoken;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import com.tictac.droptoken.codec.provider.DropTokenCodecProvider;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -22,9 +24,11 @@ import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import ru.vyarus.dropwizard.guice.GuiceBundle;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
@@ -43,11 +47,17 @@ public class DropTokenApplication extends Application<DropTokenConfiguration> {
 
     @Override
     public String getName() {
-        return "98Point6 - Drop Token";
+        return "Drop Token";
     }
 
     @Override
     public void initialize(Bootstrap<DropTokenConfiguration> bootstrap) {
+        DropTokenModule dropTokenModule = new DropTokenModule();
+
+        bootstrap.addBundle(GuiceBundle.builder()
+                .enableAutoConfig(getClass().getPackage().getName())
+                .modules(dropTokenModule)
+                .build());
     }
 
     @Override
@@ -63,25 +73,6 @@ public class DropTokenApplication extends Application<DropTokenConfiguration> {
         environment.jersey().register(new JerseyViolationExceptionMapper());
         environment.jersey().register(new JsonProcessingExceptionMapper());
         environment.jersey().register(new EarlyEofExceptionMapper());
-
-        final MongoClient mongoClient = MongoClients.create(DB_CONNECTION_STRING);
-        List<CodecProvider> providerList = new ArrayList<>();
-        providerList.add(new DropTokenCodecProvider());
-
-
-        CodecRegistry pojoCodecRegistry = fromRegistries(CodecRegistries.fromProviders(providerList),MongoClientSettings.getDefaultCodecRegistry(),
-                fromProviders(PojoCodecProvider.builder().automatic(true).build())
-                );
-        final MongoDatabase database = mongoClient.getDatabase(DATABASE)
-                .withCodecRegistry(pojoCodecRegistry);
-        DropTokenService dropTokenService = new DropTokenService(
-                new GameDaoImpl(database),
-                new GameStatusDaoImpl(database),
-                new MoveDaoImpl(database),
-                new PlayerDaoImpl(database));
-
-        final DropTokenResource resource = new DropTokenResource(dropTokenService);
-        environment.jersey().register(resource);
 
     }
 

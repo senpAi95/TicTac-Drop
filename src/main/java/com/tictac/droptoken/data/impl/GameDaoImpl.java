@@ -11,6 +11,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Updates;
 import org.bson.conversions.Bson;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ public class GameDaoImpl extends CollectionDao<Game> implements GameDao {
     private static final String NEXT_PLAYER_ID = "nextPlayerTurnId";
     private static final String PLAYERS_KEY = "players";
 
+    @Inject
     public GameDaoImpl(MongoDatabase database) {
         super(database, CollectionNames.GAME.getValue(), Game.class);
     }
@@ -85,6 +87,5 @@ public class GameDaoImpl extends CollectionDao<Game> implements GameDao {
 
         return moves.stream().skip(offset)
                 .limit(limit).collect(Collectors.toList());
-//        return moves;
     }
 }

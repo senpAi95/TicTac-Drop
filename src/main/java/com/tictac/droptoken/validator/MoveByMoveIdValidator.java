@@ -2,7 +2,6 @@ package com.tictac.droptoken.validator;
 
 import com.tictac.droptoken.model.Game;
 import com.tictac.droptoken.model.Move;
-import com.tictac.droptoken.util.ExceptionStatusCodeAndMessage;
 
 import javax.ws.rs.WebApplicationException;
 

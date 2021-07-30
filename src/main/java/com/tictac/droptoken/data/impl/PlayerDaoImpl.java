@@ -10,6 +10,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,8 @@ import static com.mongodb.client.model.Filters.in;
 public class PlayerDaoImpl extends CollectionDao<Player> implements PlayerDao {
 
     private static final String OBJECT_ID = "_id";
+
+    @Inject
     public PlayerDaoImpl(MongoDatabase database) {
         // if collection name is not valid, its not throwing error while application is running.
         super(database, CollectionNames.PLAYERS.getValue(), Player.class);
