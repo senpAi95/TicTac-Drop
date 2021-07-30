@@ -10,6 +10,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +23,14 @@ import static com.mongodb.client.model.Filters.in;
 public class PlayerDaoImpl extends CollectionDao<Player> implements PlayerDao {
 
     private static final String OBJECT_ID = "_id";
+
+    @Inject
     public PlayerDaoImpl(MongoDatabase database) {
         // if collection name is not valid, its not throwing error while application is running.
         super(database, CollectionNames.PLAYERS.getValue(), Player.class);
     }
 
-    public String addPlayer(String name, String gameId) {
+    public String addPlayer(String name) {
         String playerId = UidGenerator.generateUid(name);
         Optional<Player> optionalPlayer = getPlayer(playerId);
         if(optionalPlayer.isEmpty()) {
@@ -40,9 +43,9 @@ public class PlayerDaoImpl extends CollectionDao<Player> implements PlayerDao {
     }
 
     @Override
-    public List<String> addPlayers(List<String> names, String gameId) throws MongoException {
+    public List<String> addPlayers(List<String> names) throws MongoException {
         // optimize below to bulk operations instead of one by one
-        return names.stream().map(name -> addPlayer(name, gameId)).collect(Collectors.toList());
+        return names.stream().map(name -> addPlayer(name)).collect(Collectors.toList());
     }
     @Override
     public Optional<Player> getPlayer(String playerId) {

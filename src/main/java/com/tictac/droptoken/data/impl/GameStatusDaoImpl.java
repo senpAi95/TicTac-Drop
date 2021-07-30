@@ -9,6 +9,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Updates;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class GameStatusDaoImpl extends CollectionDao<GameStatus> implements Game
     private static final String STATUS_DONE = "DONE";
     private static final String WINNER_KEY = "winner";
 
+    @Inject
     public GameStatusDaoImpl(@Nonnull MongoDatabase database) {
         super(database, CollectionNames.STATUS.getValue(), GameStatus.class);
     }

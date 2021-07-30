@@ -1,6 +1,10 @@
 # Configuration file.
 # You can add any fields you need, be sure to update DropTokenConfiguration accordingly.
-template: some-crazy text
+template: Hello
+databaseName: droptoken
+dbConnectionString: "mongodb://localhost:27017"
+minPlayers: 2
+minGridLength: 4
 
 logging:
   level: INFO

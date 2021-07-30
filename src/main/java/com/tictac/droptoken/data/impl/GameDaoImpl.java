@@ -11,6 +11,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Updates;
 import org.bson.conversions.Bson;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
+import static com.tictac.droptoken.util.UidGenerator.generateUid;
 
 public class GameDaoImpl extends CollectionDao<Game> implements GameDao {
 
@@ -27,14 +29,19 @@ public class GameDaoImpl extends CollectionDao<Game> implements GameDao {
     private static final String NEXT_PLAYER_ID = "nextPlayerTurnId";
     private static final String PLAYERS_KEY = "players";
 
+    @Inject
     public GameDaoImpl(MongoDatabase database) {
         super(database, CollectionNames.GAME.getValue(), Game.class);
     }
 
     @Override
-    public void createGame(String gameId, CreateGameRequest request, List<String> playerIds) throws MongoException {
+    public String createGame(CreateGameRequest request, List<String> playerIds) throws MongoException {
+        List<String> distinctSortedPlayers = playerIds.stream().distinct().sorted().collect(Collectors.toList());
+        // can same players play multiple games in parallel? if so, append timestamp to sortedPlayers.
+        final String gameId = generateUid(distinctSortedPlayers);
         final Game game = new Game(gameId, playerIds, request.getColumns());
         mongoCollection.insertOne( game);
+        return gameId;
     }
 
     @Override
@@ -80,6 +87,5 @@ public class GameDaoImpl extends CollectionDao<Game> implements GameDao {
 
         return moves.stream().skip(offset)
                 .limit(limit).collect(Collectors.toList());
-//        return moves;
     }
 }
