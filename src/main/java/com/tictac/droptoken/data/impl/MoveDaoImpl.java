@@ -33,7 +33,7 @@ public class MoveDaoImpl extends CollectionDao<Move> implements MoveDao {
     }
 
     @Override
-    public void createMove(Move move) {
+    public void addMove(Move move) {
         mongoCollection.insertOne(move);
     }
 
