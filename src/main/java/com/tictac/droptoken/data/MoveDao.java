@@ -20,7 +20,7 @@ public interface MoveDao {
      *
      * @param move
      */
-    void createMove(Move move);
+    void addMove(Move move);
 
     /**
      * Retrieves all {@link Move}s by moveIds from the {@link Move} MongoCollection.

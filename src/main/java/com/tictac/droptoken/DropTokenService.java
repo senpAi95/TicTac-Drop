@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.tictac.droptoken.util.ExceptionStatusCodeAndMessage.GAME_NOT_FOUND;
 import static com.tictac.droptoken.util.ExceptionStatusCodeAndMessage.ILLEGAL_MOVE;
+import static com.tictac.droptoken.util.ExceptionStatusCodeAndMessage.PROCESSING_EXCEPTION;
 
 /**
  * A service which can handle API requests and delegate them to DAOs
@@ -49,7 +51,7 @@ public class DropTokenService {
     private PlayerQuitValidator playerQuitValidator;
 
     @Inject
-    public DropTokenService(GameDao gameDao, GameStatusDao gameStatusDao, MoveDao moveDao, PlayerDao playerDao) {
+    public DropTokenService(@Nonnull GameDao gameDao, @Nonnull GameStatusDao gameStatusDao, @Nonnull MoveDao moveDao, @Nonnull PlayerDao playerDao) {
         this.gameDao = gameDao;
         this.moveDao = moveDao;
         this.playerDao = playerDao;
@@ -83,7 +85,7 @@ public class DropTokenService {
      * @return {@code gameId} if a new game is created.
      */
     @Nonnull
-    public String createNewGame(CreateGameRequest request) throws WebApplicationException{
+    public String createNewGame(@Nonnull CreateGameRequest request) throws WebApplicationException{
         LOGGER.debug("Creating new game");
 
         newGameValidator.validate(request);
@@ -96,7 +98,7 @@ public class DropTokenService {
             gameStatusDao.createGameStatus(gameId, playerIds);
         }  catch (MongoException e) {
             LOGGER.error("Unable to process the request because of {}", e);
-            throwException(ExceptionStatusCodeAndMessage.PROCESSING_EXCEPTION);
+            throwException(PROCESSING_EXCEPTION);
         }
         LOGGER.debug("Created gameId {}", gameId);
         return gameId;
@@ -109,7 +111,7 @@ public class DropTokenService {
      * @return {@link GameStatusResponse}
      */
     @Nonnull
-    public GameStatusResponse getGameStatus(String gameId) {
+    public GameStatusResponse getGameStatus(@Nonnull String gameId) {
         LOGGER.debug("Retrieving game status {}", gameId);
         GameStatusResponse.Builder builder = new GameStatusResponse.Builder();
         Optional<GameStatus> optionalGameStatus = gameStatusDao.getGameStatus(gameId);
@@ -136,7 +138,7 @@ public class DropTokenService {
      * @return {@link PostMoveResponse}
      */
     @Nonnull
-    public PostMoveResponse postMove(String gameId, String playerId, int column) {
+    public PostMoveResponse postMove(@Nonnull String gameId, @Nonnull String playerId, int column) {
         Game game = gameDao.getGame(gameId).orElse(null);
         GameStatus gameStatus = gameStatusDao.getGameStatus(gameId).orElse(null);
         Player player = playerDao.getPlayer(playerId).orElse(null);
@@ -144,8 +146,8 @@ public class DropTokenService {
         postMoveValidator.validate(game, player, gameStatus, playerId);
 
         String[][] grid = buildGrid(game.getGridValues(), game.getLength());
-        int rowIndex = gridOperations.getPossibleRow(grid, column);
 
+        int rowIndex = gridOperations.getPossibleRow(grid, column);
         if(rowIndex == -1) {
             throwException(ILLEGAL_MOVE);
         }
@@ -154,46 +156,27 @@ public class DropTokenService {
         Move move = moveCreator(MOVE, player.getName(), column);
 
         // updateGrid and add Move.
-        game.getMoveIds().add(move.getId());
+        // game.getMoveIds().add(move.getId());
 
          if(gridOperations.winningMove(grid, playerId, rowIndex, column))
              gameStatusDao.updateGameStatusToCompleted(gameId, player.getName());
 
-            //update gameDao, movesDao
-        moveDao.createMove(move);
-        Optional<String> nextPlayer =  nextPlayerInGame(game.getPlayerIds(), playerId);
+         //update gameDao, movesDao
+        moveDao.addMove(move);
+        Optional<String> nextPlayer =  game.nextPlayerInGame(game.getPlayerIds(), playerId);
         gameDao.addMove(gameId, move.getId(), getGridValues(grid), nextPlayer);
+
         String moveLink = createMoveLink(gameId, move.getId());
 
         return new PostMoveResponse.Builder().moveLink(moveLink).build();
     }
 
-    private Move moveCreator(String type, String name, int column) {
+    @Nonnull
+    private Move moveCreator(@Nonnull String type, @Nonnull String name, int column) {
         if(type.equals(QUIT)) {
             return new Move(type, name);
         }
         return new Move(type, name, column);
-    }
-
-    /**
-     * Retrieves a player whose turn is next.
-     *
-     * @param inGamePlayerIds Current players in a sequential order.
-     * @param playerId Current Player who finished posting a move.
-     * @return {@link Optional<String>}
-     */
-    @Nonnull
-    Optional<String> nextPlayerInGame(@Nonnull List<String> inGamePlayerIds,@Nonnull String playerId) {
-        int indexOfCurrentPlayer = inGamePlayerIds.indexOf(playerId);
-        Optional<String> nextPlayer = Optional.empty();
-        if(inGamePlayerIds.size()!=1) {
-            if(indexOfCurrentPlayer == inGamePlayerIds.size()-1) {
-                return Optional.of(inGamePlayerIds.get(0));
-            } else {
-                return  Optional.of(inGamePlayerIds.get(indexOfCurrentPlayer + 1));
-            }
-        }
-        return nextPlayer;
     }
 
     /**
@@ -221,7 +204,7 @@ public class DropTokenService {
      * @param playerId The playerId who quits.
      */
     @Nonnull
-    public void playerQuit(@Nonnull String gameId, @Nonnull String playerId) {
+    public void playerQuit(@Nonnull String gameId, @Nonnull String playerId) throws WebApplicationException {
         Game game = gameDao.getGame(gameId).orElse(null);
         Player player = playerDao.getPlayer(playerId).orElse(null);
         GameStatus gameStatus = gameStatusDao.getGameStatus(gameId).orElse(null);
@@ -230,7 +213,7 @@ public class DropTokenService {
 
         Move move = moveCreator(QUIT, player.getName(), -1);
 
-        moveDao.createMove(move);
+        moveDao.addMove(move);
 
         try {
             List<String> inGamePlayerIds = game.getPlayerIds();
@@ -246,7 +229,7 @@ public class DropTokenService {
             }
 
         } catch (MongoException  e) {
-            throwException(ExceptionStatusCodeAndMessage.PROCESSING_EXCEPTION);
+            throwException(PROCESSING_EXCEPTION);
         }
 
     }
@@ -260,13 +243,13 @@ public class DropTokenService {
      * @return
      */
     @Nonnull
-    public GetMovesResponse getMoves(@Nonnull String gameId, int start, int until) {
+    public GetMovesResponse getMoves(@Nonnull String gameId, int start, int until) throws WebApplicationException {
         List<String> moveIds = new ArrayList<>();
         try {
             moveIds = gameDao.getMoves(gameId, Integer.valueOf(start), Integer.valueOf(until));
         } catch (IllegalArgumentException e) {
             LOGGER.error("Game doesn't exist for the gameId {}", gameId);
-            throwException(ExceptionStatusCodeAndMessage.GAME_NOT_FOUND);
+            throwException(GAME_NOT_FOUND);
         }
 
         List<Move> moves = moveDao.getMoves(moveIds);
@@ -307,7 +290,7 @@ public class DropTokenService {
     public List<Player> getPlayers(@Nonnull String gameId) {
         Optional<Game> optionalGame = gameDao.getGame(gameId);
         if(optionalGame.isEmpty()) {
-            throwException(ExceptionStatusCodeAndMessage.GAME_NOT_FOUND);
+            throwException(GAME_NOT_FOUND);
         }
 
         return playerDao.getPlayers(optionalGame.get().getPlayerIds());

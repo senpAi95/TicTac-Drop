@@ -3,6 +3,7 @@ package com.tictac.droptoken.model;
 
 import org.bson.codecs.pojo.annotations.BsonId;
 
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.*;
 
@@ -106,5 +107,27 @@ public class Game implements Serializable {
 
     public void setAbandonedPlayers(List<String> abandonedPlayers) {
         this.abandonedPlayers = abandonedPlayers;
+    }
+
+
+    /**
+     * Retrieves a player whose turn is next.
+     *
+     * @param inGamePlayerIds Current players in a sequential order.
+     * @param playerId Current Player who finished posting a move.
+     * @return {@link Optional<String>}
+     */
+    @Nonnull
+    public Optional<String> nextPlayerInGame(@Nonnull List<String> inGamePlayerIds, @Nonnull String playerId) {
+        int indexOfCurrentPlayer = inGamePlayerIds.indexOf(playerId);
+        Optional<String> nextPlayer = Optional.empty();
+        if(inGamePlayerIds.size()!=1) {
+            if(indexOfCurrentPlayer == inGamePlayerIds.size()-1) {
+                return Optional.of(inGamePlayerIds.get(0));
+            } else {
+                return  Optional.of(inGamePlayerIds.get(indexOfCurrentPlayer + 1));
+            }
+        }
+        return nextPlayer;
     }
 }
