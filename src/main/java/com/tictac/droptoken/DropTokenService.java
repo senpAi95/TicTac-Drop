@@ -39,23 +39,32 @@ public class DropTokenService {
     private final PlayerDao playerDao;
     private final GameStatusDao gameStatusDao;
 
-    @Inject
-    private GridOperations gridOperations;
-    @Inject
-    private NewGameValidator newGameValidator;
-    @Inject
-    private GameStatusValidator gameStatusValidator;
-    @Inject
-    private PostMoveValidator postMoveValidator;
-    @Inject
-    private PlayerQuitValidator playerQuitValidator;
+    private final GridOperations gridOperations;
+    private final NewGameValidator newGameValidator;
+    private final GameStatusValidator gameStatusValidator;
+    private final PostMoveValidator postMoveValidator;
+    private final PlayerQuitValidator playerQuitValidator;
 
     @Inject
-    public DropTokenService(@Nonnull GameDao gameDao, @Nonnull GameStatusDao gameStatusDao, @Nonnull MoveDao moveDao, @Nonnull PlayerDao playerDao) {
+    public DropTokenService(
+            @Nonnull GameDao gameDao,
+            @Nonnull GameStatusDao gameStatusDao,
+            @Nonnull MoveDao moveDao,
+            @Nonnull PlayerDao playerDao,
+            @Nonnull GridOperations gridOperations,
+            @Nonnull NewGameValidator newGameValidator,
+            @Nonnull GameStatusValidator gameStatusValidator,
+            @Nonnull PostMoveValidator postMoveValidator,
+            @Nonnull PlayerQuitValidator playerQuitValidator) {
         this.gameDao = gameDao;
         this.moveDao = moveDao;
         this.playerDao = playerDao;
         this.gameStatusDao = gameStatusDao;
+        this.gridOperations = gridOperations;
+        this.newGameValidator = newGameValidator;
+        this.gameStatusValidator = gameStatusValidator;
+        this.postMoveValidator = postMoveValidator;
+        this.playerQuitValidator = playerQuitValidator;
     }
 
     /**
@@ -155,8 +164,6 @@ public class DropTokenService {
 
         Move move = moveCreator(MOVE, player.getName(), column);
 
-        // updateGrid and add Move.
-        // game.getMoveIds().add(move.getId());
 
          if(gridOperations.winningMove(grid, playerId, rowIndex, column))
              gameStatusDao.updateGameStatusToCompleted(gameId, player.getName());
