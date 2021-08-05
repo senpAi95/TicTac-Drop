@@ -1,5 +1,5 @@
 # Configuration file.
-# You can add any fields you need, be sure to update DropTokenConfiguration accordingly.
+# You can add any fields you need, be sure to update TicTacDropConfiguration accordingly.
 template: Hello
 databaseName: droptoken
 dbConnectionString: "mongodb://localhost:27018"

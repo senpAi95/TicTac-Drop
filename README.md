@@ -4,7 +4,7 @@ This code, based on [Dropwizard](http://www.dropwizard.io/1.1.0/docs/), requires
 ## Compile ##
 `mvn clean verify`
 ## Run Service ##
-`java -jar target/tictac-droptoken-1.0-SNAPSHOT.jar server src/main/resources/local.yml`
+`java -jar target/tictac-drop-1.0-SNAPSHOT.jar server src/main/resources/local.yml`
 ## Test service manually ##
 ```
  curl --header "Content-type: Application/json" -X POST http://localhost:8080/drop_token -d'{ "players":["p1", "p2"], "rows":4, "columns":4}'
