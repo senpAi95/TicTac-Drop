@@ -39,23 +39,32 @@ public class TicTacDropService {
     private final PlayerDao playerDao;
     private final GameStatusDao gameStatusDao;
 
-    @Inject
-    private GridOperations gridOperations;
-    @Inject
-    private NewGameValidator newGameValidator;
-    @Inject
-    private GameStatusValidator gameStatusValidator;
-    @Inject
-    private PostMoveValidator postMoveValidator;
-    @Inject
-    private PlayerQuitValidator playerQuitValidator;
+    private final GridOperations gridOperations;
+    private final NewGameValidator newGameValidator;
+    private final GameStatusValidator gameStatusValidator;
+    private final PostMoveValidator postMoveValidator;
+    private final PlayerQuitValidator playerQuitValidator;
 
     @Inject
-    public TicTacDropService(@Nonnull GameDao gameDao, @Nonnull GameStatusDao gameStatusDao, @Nonnull MoveDao moveDao, @Nonnull PlayerDao playerDao) {
+    public TicTacDropService(
+            @Nonnull GameDao gameDao,
+            @Nonnull GameStatusDao gameStatusDao,
+            @Nonnull MoveDao moveDao,
+            @Nonnull PlayerDao playerDao,
+            @Nonnull GridOperations gridOperations,
+            @Nonnull NewGameValidator newGameValidator,
+            @Nonnull GameStatusValidator gameStatusValidator,
+            @Nonnull PostMoveValidator postMoveValidator,
+            @Nonnull PlayerQuitValidator playerQuitValidator) {
         this.gameDao = gameDao;
         this.moveDao = moveDao;
         this.playerDao = playerDao;
         this.gameStatusDao = gameStatusDao;
+        this.gridOperations = gridOperations;
+        this.newGameValidator = newGameValidator;
+        this.gameStatusValidator = gameStatusValidator;
+        this.postMoveValidator = postMoveValidator;
+        this.playerQuitValidator = playerQuitValidator;
     }
 
     /**
@@ -164,7 +173,7 @@ public class TicTacDropService {
          //update gameDao, movesDao
         moveDao.addMove(move);
         Optional<String> nextPlayer =  game.nextPlayerInGame(game.getPlayerIds(), playerId);
-        gameDao.addMove(gameId, move.getId(), getGridValues(grid), nextPlayer);
+        gameDao.addMove(gameId, move.getId(), getGridValues(grid), nextPlayer.orElse(null));
 
         String moveLink = createMoveLink(gameId, move.getId());
 
@@ -217,8 +226,7 @@ public class TicTacDropService {
 
         try {
             List<String> inGamePlayerIds = game.getPlayerIds();
-            Optional<String> nextPlayer = Optional.empty();
-            gameDao.addQuitMove(gameId, move.getId(), nextPlayer);
+            gameDao.addQuitMove(gameId, move.getId());
             gameDao.removePlayer(gameId, playerId);
             inGamePlayerIds.remove(playerId);
             // check the number of players in the retrieved game is 2, if its 2 and a player quits. declare last one as winner

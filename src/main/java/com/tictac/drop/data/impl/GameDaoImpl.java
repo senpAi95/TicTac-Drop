@@ -51,20 +51,20 @@ public class GameDaoImpl extends CollectionDao<Game> implements GameDao {
     }
 
     @Override
-    public void addQuitMove(String gameId, String moveId, Optional<String> playerId) {
-        addMove(gameId, moveId, null, playerId);
+    public void addQuitMove(String gameId, String moveId) {
+        addMove(gameId, moveId, null, null);
     }
 
     @Override
-    public void addMove(String gameId, String moveId, List<String> grid, Optional<String> nextPlayerId) {
+    public void addMove(String gameId, String moveId, List<String> grid, String nextPlayerId) {
         Bson update = Updates.push(MOVE_IDS_KEY, moveId);
         if(grid != null)
         {
             Iterable<String> iterable = () -> grid.iterator();
             update = and(update, Updates.set(GRID_VALUES_KEY, iterable));
         }
-        if(!nextPlayerId.isEmpty()) {
-            update = and(update, Updates.set(NEXT_PLAYER_ID, nextPlayerId.get()));
+        if(nextPlayerId != null) {
+            update = and(update, Updates.set(NEXT_PLAYER_ID, nextPlayerId));
         }
 
         mongoCollection.updateOne(eq(OBJECT_ID, gameId), update);

@@ -30,9 +30,9 @@ public interface GameDao {
      * @param gameId
      * @param moveId
      * @param grid
-     * @param nexPlayer
+     * @param nextPlayer
      */
-    void addMove(String gameId, String moveId, List<String> grid, Optional<String> nexPlayer);
+    void addMove(String gameId, String moveId, List<String> grid, String nextPlayer);
 
     /**
      * Removes a {@link Player} id from game in the {@link Game} Mongo Collection.
@@ -58,7 +58,6 @@ public interface GameDao {
      *
      * @param gameId
      * @param id
-     * @param nextPlayer
      */
-    void addQuitMove(String gameId, String id, Optional<String> nextPlayer);
+    void addQuitMove(String gameId, String id);
 }
