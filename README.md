@@ -18,3 +18,6 @@ This code, based on [Dropwizard](http://www.dropwizard.io/1.1.0/docs/), requires
 
 ## images
 Game Screenshots can be seen [here](screenshots)
+
+## wiki
+Design decisions and requirements are documented [here](https://github.com/senpAi95/TicTac-Drop/wiki/Welcome-to-TicTac-Drop)
