@@ -16,7 +16,7 @@ import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 /**
- *
+ * Dropwizard application for wiring up TicTacDrop service.
  */
 public class TicTacDropApplication extends Application<TicTacDropConfiguration> {
 

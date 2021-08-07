@@ -6,6 +6,9 @@ import javax.ws.rs.WebApplicationException;
 
 import static com.tictac.drop.util.ExceptionStatusCodeAndMessage.GAME_NOT_FOUND;
 
+/**
+ * A validator that validates a request for retrieving gamestatus.
+ */
 public class GameStatusValidator {
     void validateGameIfExists(GameStatus gameStatus) throws WebApplicationException{
         if(gameStatus == null) {

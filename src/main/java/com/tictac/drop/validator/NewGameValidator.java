@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 import static com.tictac.drop.util.ExceptionStatusCodeAndMessage.INVALID_GAME_REQUEST;
 import static com.tictac.drop.util.ExceptionStatusCodeAndMessage.PLAYER_NAME_ALREADY_EXISTS;
 
+/**
+ * A validator that validates a request for requests related to creating a new game.
+ */
 public class NewGameValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NewGameValidator.class);

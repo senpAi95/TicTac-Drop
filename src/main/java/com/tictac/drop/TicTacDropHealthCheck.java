@@ -8,6 +8,9 @@ import ru.vyarus.dropwizard.guice.module.installer.feature.health.NamedHealthChe
 
 import javax.inject.Inject;
 
+/**
+ * Health check for the webservice. Its dependent on DB availability.
+ */
 public class TicTacDropHealthCheck extends NamedHealthCheck {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TicTacDropHealthCheck.class);

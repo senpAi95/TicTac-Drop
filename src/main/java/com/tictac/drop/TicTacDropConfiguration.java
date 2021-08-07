@@ -5,9 +5,8 @@ import io.dropwizard.Configuration;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
- *
+ * Configuration that can be provided from yaml resources.
  */
-
 public class TicTacDropConfiguration extends Configuration {
     @NotEmpty
     private String template;

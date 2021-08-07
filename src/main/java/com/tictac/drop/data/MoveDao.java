@@ -5,6 +5,9 @@ import com.tictac.drop.model.Move;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * MoveDao for interacting with DB for read and write operations.
+ */
 public interface MoveDao {
 
     /**

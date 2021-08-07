@@ -7,6 +7,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
+/**
+ * Exception Mapper for all exceptions.
+ */
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
     private static final Logger LOGGER = LoggerFactory.getLogger(WebApplicationExceptionMapper.class);
 

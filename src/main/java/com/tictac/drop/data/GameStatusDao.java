@@ -7,6 +7,9 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * GameStatusDao for interacting with DB for read and write operations.
+ */
 public interface GameStatusDao {
 
     /**

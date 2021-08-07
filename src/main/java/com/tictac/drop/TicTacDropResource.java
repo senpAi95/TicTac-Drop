@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
- *
+ * Resource file for providing the API functionality.
  */
 @Path("/drop_token")
 @Produces(MediaType.APPLICATION_JSON)

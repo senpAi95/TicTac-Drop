@@ -6,6 +6,9 @@ import com.mongodb.MongoException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * PlayerDao for interacting with DB for read and write operations.
+ */
 public interface PlayerDao {
 
     /**

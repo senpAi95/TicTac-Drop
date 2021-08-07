@@ -14,6 +14,9 @@ import static com.tictac.drop.util.ExceptionStatusCodeAndMessage.GAME_NOT_FOUND;
 import static com.tictac.drop.util.ExceptionStatusCodeAndMessage.PLAYER_NOT_FOUND;
 import static com.tictac.drop.util.ExceptionStatusCodeAndMessage.PLAYER_NOT_IN_GAME;
 
+/**
+ * A validator that validates a request for requests related to game move.
+ */
 public abstract class MoveValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MoveValidator.class);

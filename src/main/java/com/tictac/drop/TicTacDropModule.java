@@ -31,6 +31,9 @@ import java.util.Collections;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
+/**
+ * A guice module for providing Dependency Injection container.
+ */
 public class TicTacDropModule extends AbstractModule {
 
     @Override

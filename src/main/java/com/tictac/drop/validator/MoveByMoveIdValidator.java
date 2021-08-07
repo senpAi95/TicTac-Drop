@@ -8,6 +8,9 @@ import javax.ws.rs.WebApplicationException;
 import static com.tictac.drop.util.ExceptionStatusCodeAndMessage.GAME_NOT_FOUND;
 import static com.tictac.drop.util.ExceptionStatusCodeAndMessage.MOVE_NOT_FOUND;
 
+/**
+ * A validator that validates a request for retrieving a move.
+ */
 public class MoveByMoveIdValidator {
 
     void validateGame(Game game) throws WebApplicationException{

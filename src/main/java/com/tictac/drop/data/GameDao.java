@@ -6,6 +6,9 @@ import com.tictac.drop.model.Game;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * GameDao for interacting with DB for read and write operations.
+ */
 public interface GameDao {
 
     /**
